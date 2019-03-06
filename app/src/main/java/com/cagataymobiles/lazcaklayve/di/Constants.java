@@ -1,4 +1,4 @@
-package com.cagataymobiles.lazcaklayve;
+package com.cagataymobiles.lazcaklayve.di;
 
 /**
  * Created by tolga on 05/03/19.
@@ -7,23 +7,12 @@ package com.cagataymobiles.lazcaklayve;
 public class Constants {
 
 
-    public enum LAZURI_CODES {
+    public static  String[] LAZURURI_LETERS_LOWERS= new String[]{ "ç̌","ǩ","p̌","t̆","ž","ʒ", "ǯ","ö","ü","ı","ç","ğ","ş"};
+    public static  String[] LAZURURI_LETERS_UPPERS = new String[]{"Ç̌","Ǩ","P̌","Ť","Ž","Ʒ", "Ǯ","Ö","Ü","İ","Ç","Ğ","Ş"};
 
-        CODE_53001 ("Fancy Mode 1"),
-        CODE_53002 ("Fancy Mode 2"),
-        CODE_53003 ("Fancy Mode 3"),
-        CODE_53004 ("Fancy Mode 3"),
-        CODE_53005 ("Fancy Mode 3"),
-        CODE_53006 ("Fancy Mode 3");
+   public static  int[] LAZURURI_INDEX = new int[]{ 53001,53002,53003,53004,53005,53006,53007,  53008,53009,53010,53011,53012,53013};
 
 
-        private final String name;
-
-        private LAZURI_CODES(String s) {
-            name = s;
-        }
-
-    }
 
 
 }

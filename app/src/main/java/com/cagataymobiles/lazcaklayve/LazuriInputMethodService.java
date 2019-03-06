@@ -6,6 +6,8 @@ import android.graphics.Point;
 import android.inputmethodservice.InputMethodService;
 import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
+import android.media.AudioManager;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Display;
@@ -14,12 +16,17 @@ import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.cagataymobiles.lazcaklayve.di.Constants;
+
+import static android.inputmethodservice.Keyboard.KEYCODE_DONE;
 
 /**
  * Created by Muhammet ÇAĞATAY on 04/03/19.
@@ -29,116 +36,89 @@ import android.widget.TextView;
 public class LazuriInputMethodService extends InputMethodService {
 
 
-    String[] uppersSet0 = new String[]{ "1","2","3","4","5","6","7","8","9","0"};
-    String[] uppersSet1 = new String[]{ "ç̌","ǩ","p̌","t̆","ž","ʒ", "ǯ"};
-    String[] uppersSet2 = new String[]{ "q","w","e","r","t","y","u","ı","o","p","ğ","ü"};
-    String[] uppersSet3 = new String[]{ "a","s","d","f","g","h","j","k","l","ş","i"};
-    String[] uppersSet4 = new String[]{  "z","x","c","v","b","n","m","ö","ç"};
-
-    String[] uppers = new String[]{"A", "B", "C", "Ç", "Ç̌", "D", "E", "F", "G", "Ğ", "H", "X", "İ", "J", "K", "Ǩ", "Q", "L", "M", "N", "O", "P", "P̌", "R", "S", "Ş", "T", "Ť", "U", "V", "Y", "Z", "Ž", "Ʒ", "Ǯ" };
-
-    String[] lowers = new String[]{"a", "b", "c", "ç", "ç̌", "d", "e", "f", "g", "ğ", "h", "x", "i", "j", "k", "ǩ", "q", "l", "m", "n", "o", "p", "p̌", "r", "s", "ş", "t", "t̆", "u", "v", "y", "z", "ž", "ʒ", "ǯ" };
-    LinearLayout layout;
-    int width = 0;
-    int buttonwidth=0;
-
+    boolean isCapsOpen=false;
+    private KeyboardView keyboardView;
+    private Keyboard mSymbolsKeyboard;
+    private Keyboard mSymbolsShiftedKeyboard;
+    private Keyboard mQwertyKeyboard;
+    private int mLastDisplayWidth;
 
 
     @Override
     public View onCreateInputView()
     {
-
       return getKeyboard();
-
     }
-
-
-    View getCustomUI()
-    {
-
-        layout = (LinearLayout) getLayoutInflater().inflate(R.layout.klavye_view, null);
-        WindowManager wm = (WindowManager) getBaseContext().getSystemService(Context.WINDOW_SERVICE);
-        Display display = wm.getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        width = size.x;
-
-        addViews(uppersSet0);
-        addViews(uppersSet1);
-        addViews(uppersSet2);
-        addViews(uppersSet3);
-        addViews(uppersSet4);
-
-        return layout;
-
-    }
-
-
-
-    void  addViews(String[] arrayOfSet){
-
-        LinearLayout linearLayout = (LinearLayout) getLayoutInflater().inflate(R.layout.klavye_row, null);
-        buttonwidth=width/arrayOfSet.length;
-        for (int i = 0; i < arrayOfSet.length; i++)
-        {
-            final TextView myButton = new TextView(this);
-            myButton.setGravity(Gravity.CENTER);
-            myButton.setBackground(getBaseContext().getResources().getDrawable(R.drawable.key_background));
-            myButton.setTextColor(Color.WHITE);
-            myButton.setTextSize(30);
-            myButton.setText(arrayOfSet[i]);
-            myButton.setId(i);
-            myButton.setWidth(buttonwidth);
-            myButton.setHeight(100);
-            linearLayout.addView(myButton);
-
-            myButton.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View view) {
-                    InputConnection ic = getCurrentInputConnection();
-                    if (ic == null) return;
-                    ic.commitText(String.valueOf(myButton.getText()), 1);
-
-                }
-            });
-        }
-
-        layout.addView(linearLayout);
-
-    }
-
 
 
     View getKeyboard()
     {
-
-        final KeyboardView keyboardView = (KeyboardView) getLayoutInflater().inflate(R.layout.keyboard_view, null);
-        final Keyboard keyboard = new Keyboard(this, R.xml.lazca_klavye);
-        keyboardView.setKeyboard(keyboard);
+        keyboardView = (KeyboardView) getLayoutInflater().inflate(R.layout.keyboard_view, null);
+        keyboardView.setKeyboard(mQwertyKeyboard);
         keyboardView.setOnKeyboardActionListener(new KeyboardView.OnKeyboardActionListener() {
 
             @Override
             public void onKey(int primaryCode, int[] keyCodes) {
 
-                Log.e("CODE",keyCodes[0]+"");
-
                 InputConnection ic = getCurrentInputConnection();
-                if (ic == null) return;
-                switch (primaryCode) {
-                    case Keyboard.KEYCODE_DELETE:
-                        CharSequence selectedText = ic.getSelectedText(0);
-                        if (TextUtils.isEmpty(selectedText)) {
-                            // no selection, so delete previous character
-                            ic.deleteSurroundingText(1, 0);
-                        } else {
-                            // delete the selection
-                            ic.commitText("", 1);
-                        }
-                        ic.deleteSurroundingText(1, 0);
-                        break;
-                    default:
-                        char code = (char) primaryCode;
-                        ic.commitText(String.valueOf(code), 1);
+                playClick(primaryCode);
+
+                if(primaryCode==Keyboard.KEYCODE_DELETE)
+                {
+                    ic.deleteSurroundingText(1, 0);
                 }
+                else if(primaryCode==KEYCODE_DONE)
+                {
+                    ic.sendKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
+                }
+                else if(primaryCode==Keyboard.KEYCODE_SHIFT)
+                {
+                    handleShift();
+                }
+                else if(primaryCode== Keyboard.KEYCODE_MODE_CHANGE)
+                {
+                    Keyboard current = keyboardView.getKeyboard();
+                    if (current == mSymbolsKeyboard || current == mSymbolsShiftedKeyboard) {
+                        keyboardView.setKeyboard(mQwertyKeyboard);
+                    }
+                    else {
+                        keyboardView.setKeyboard(mSymbolsKeyboard);
+                        mSymbolsKeyboard.setShifted(false);
+                    }
+                }
+                else
+                {
+                    boolean isLogin=true;
+                    for (int i = 0; i < Constants.LAZURURI_INDEX.length; i++) {
+
+                        if(primaryCode==Constants.LAZURURI_INDEX[i])
+                        {
+                            if(isCapsOpen)
+                            {
+                                ic.commitText(Constants.LAZURURI_LETERS_UPPERS[i], 1);
+                            }
+                            else
+                            {
+                                ic.commitText(Constants.LAZURURI_LETERS_LOWERS[i], 1);
+                            }
+
+                            isLogin=false;
+                            break;
+                        }
+                    }
+
+                    if(isLogin)
+                    {
+                        char code = (char) primaryCode;
+                        if (Character.isLetter(code) && isCapsOpen) {
+                            code = Character.toUpperCase(code);
+                        }
+
+                        String string = String.valueOf(code);
+                        ic.commitText(string, 1);
+                    }
+                }
+
             }
 
             @Override
@@ -172,9 +152,68 @@ public class LazuriInputMethodService extends InputMethodService {
             }
         });
 
-
         return keyboardView;
     }
+
+
+    @Override public void onInitializeInterface() {
+
+        super.onInitializeInterface();
+        if (mQwertyKeyboard != null) {
+            // Configuration changes can happen after the keyboard gets recreated,
+            // so we need to be able to re-build the keyboards if the available
+            // space has changed.
+            int displayWidth = getMaxWidth();
+            if (displayWidth == mLastDisplayWidth) return;
+            mLastDisplayWidth = displayWidth;
+        }
+
+        mQwertyKeyboard = new Keyboard(this, R.xml.qwerty);
+        mSymbolsKeyboard = new Keyboard(this, R.xml.symbols);
+        mSymbolsShiftedKeyboard = new Keyboard(this, R.xml.symbols_shift);
+    }
+
+
+    private void playClick(int keyCode) {
+        AudioManager am = (AudioManager) getSystemService(AUDIO_SERVICE);
+        switch (keyCode) {
+            case 32:
+                am.playSoundEffect(AudioManager.FX_KEYPRESS_SPACEBAR);
+                break;
+            case KEYCODE_DONE:
+            case 10:
+                am.playSoundEffect(AudioManager.FX_KEYPRESS_RETURN);
+                break;
+            case Keyboard.KEYCODE_DELETE:
+                am.playSoundEffect(AudioManager.FX_KEYPRESS_DELETE);
+                break;
+            default:
+                am.playSoundEffect(AudioManager.FX_KEYPRESS_STANDARD);
+        }
+    }
+
+
+    private void handleShift() {
+        if (keyboardView == null) {
+            return;
+        }
+
+        Keyboard currentKeyboard = keyboardView.getKeyboard();
+        if (mQwertyKeyboard == currentKeyboard) {
+            // Alphabet keyboarD
+            isCapsOpen=!isCapsOpen;
+            keyboardView.setShifted(isCapsOpen || !keyboardView.isShifted());
+        } else if (currentKeyboard == mSymbolsKeyboard) {
+            mSymbolsKeyboard.setShifted(true);
+            keyboardView.setKeyboard(mSymbolsShiftedKeyboard);
+            mSymbolsShiftedKeyboard.setShifted(true);
+        } else if (currentKeyboard == mSymbolsShiftedKeyboard) {
+            mSymbolsShiftedKeyboard.setShifted(false);
+            keyboardView.setKeyboard(mSymbolsKeyboard);
+            mSymbolsKeyboard.setShifted(false);
+        }
+    }
+
 
 
 }
