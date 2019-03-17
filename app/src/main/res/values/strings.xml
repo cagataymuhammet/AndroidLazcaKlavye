@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">LazcaKlayve</string>
+
+    <string name="app_name">Lazca Klavye</string>
+    <string name="intro">İlköğretimde defalarca anlatılmasına rağmen, ne yazık ki Milletimizin %93\'ü,\nŞİVE ve DİL arasındaki farkı bilmemektedir!\n\n\n\nM.ÇAĞATAY\nMatematik ve Bilgisayar Bilimcisi</string>
+    <string name="step1">Hoşgeldiniz,\nAdım 1 : Lazca Klavye\'yi sistemde aktifleştiriniz.</string>
+    <string name="step2">ADIM 2 : Varsayılan klavye olarak Lazca Klavye\'yi belirleyiniz.</string>
+
 </resources>

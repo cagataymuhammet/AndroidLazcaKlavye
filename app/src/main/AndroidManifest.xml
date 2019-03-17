@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.cagataymobiles.lazcaklayve">
+    package="com.cagataymobile.lazurikeyboard">
 
     <application
-        android:allowBackup="true"
-        android:icon="@drawable/appicon"
-        android:label="@string/app_name"
         android:name=".di.App"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-        <activity android:name=".LazuriActivity">
+        <activity
+            android:name=".ui.SplashActivity"
+            android:theme="@style/AppThemeFullScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -19,17 +21,25 @@
         </activity>
 
         <service
-            android:name=".LazuriInputMethodService"
+            android:name=".util.LazuriInputMethodService"
             android:label="Lazca Klavye"
             android:permission="android.permission.BIND_INPUT_METHOD">
             <intent-filter>
-                <action android:name="android.view.InputMethod"/>
+                <action android:name="android.view.InputMethod" />
             </intent-filter>
+
             <meta-data
                 android:name="android.view.im"
-                android:resource="@xml/method"/>
+                android:resource="@xml/input_method" />
         </service>
 
+        <activity
+            android:name=".ui.EnableKeyboardActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.SelectKeyboardActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".ui.InfoActivity"></activity>
     </application>
 
 </manifest>

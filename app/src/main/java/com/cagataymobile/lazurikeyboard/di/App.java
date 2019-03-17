@@ -1,4 +1,4 @@
-package com.cagataymobiles.lazcaklayve.di;
+package com.cagataymobile.lazurikeyboard.di;
 
 import android.app.Application;
 

@@ -1,30 +1,15 @@
-package com.cagataymobiles.lazcaklayve;
+package com.cagataymobile.lazurikeyboard.util;
 
-import android.content.Context;
-import android.graphics.Color;
-import android.graphics.Point;
 import android.inputmethodservice.InputMethodService;
 import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
 import android.media.AudioManager;
-import android.text.InputType;
-import android.text.TextUtils;
-import android.util.Log;
-import android.view.Display;
-import android.view.Gravity;
-import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.WindowManager;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
-import android.widget.Button;
-import android.widget.GridLayout;
-import android.widget.GridView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
-import com.cagataymobiles.lazcaklayve.di.Constants;
+import com.cagataymobile.lazurikeyboard.R;
+import com.cagataymobile.lazurikeyboard.di.Constants;
 
 import static android.inputmethodservice.Keyboard.KEYCODE_DONE;
 
@@ -35,14 +20,12 @@ import static android.inputmethodservice.Keyboard.KEYCODE_DONE;
 
 public class LazuriInputMethodService extends InputMethodService {
 
-
     boolean isCapsOpen=false;
     private KeyboardView keyboardView;
     private Keyboard mSymbolsKeyboard;
     private Keyboard mSymbolsShiftedKeyboard;
     private Keyboard mQwertyKeyboard;
     private int mLastDisplayWidth;
-
 
     @Override
     public View onCreateInputView()
@@ -67,7 +50,7 @@ public class LazuriInputMethodService extends InputMethodService {
                 {
                     ic.deleteSurroundingText(1, 0);
                 }
-                else if(primaryCode==KEYCODE_DONE)
+                else if(primaryCode==KEYCODE_DONE || primaryCode==53015)
                 {
                     ic.sendKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
                 }
@@ -89,16 +72,14 @@ public class LazuriInputMethodService extends InputMethodService {
                 else
                 {
                     boolean isLogin=true;
+
                     for (int i = 0; i < Constants.LAZURURI_INDEX.length; i++) {
 
-                        if(primaryCode==Constants.LAZURURI_INDEX[i])
-                        {
-                            if(isCapsOpen)
-                            {
+                        if(primaryCode==Constants.LAZURURI_INDEX[i]) {
+                            if(isCapsOpen) {
                                 ic.commitText(Constants.LAZURURI_LETERS_UPPERS[i], 1);
                             }
-                            else
-                            {
+                            else {
                                 ic.commitText(Constants.LAZURURI_LETERS_LOWERS[i], 1);
                             }
 
@@ -107,8 +88,7 @@ public class LazuriInputMethodService extends InputMethodService {
                         }
                     }
 
-                    if(isLogin)
-                    {
+                    if(isLogin) {
                         char code = (char) primaryCode;
                         if (Character.isLetter(code) && isCapsOpen) {
                             code = Character.toUpperCase(code);
@@ -155,8 +135,8 @@ public class LazuriInputMethodService extends InputMethodService {
         return keyboardView;
     }
 
-
-    @Override public void onInitializeInterface() {
+    @Override
+    public void onInitializeInterface() {
 
         super.onInitializeInterface();
         if (mQwertyKeyboard != null) {
@@ -168,19 +148,20 @@ public class LazuriInputMethodService extends InputMethodService {
             mLastDisplayWidth = displayWidth;
         }
 
-        mQwertyKeyboard = new Keyboard(this, R.xml.qwerty);
+        mQwertyKeyboard = new Keyboard(this, R.xml.keyboard_lazca);
         mSymbolsKeyboard = new Keyboard(this, R.xml.symbols);
         mSymbolsShiftedKeyboard = new Keyboard(this, R.xml.symbols_shift);
     }
 
 
-    private void playClick(int keyCode) {
+    void playClick(int keyCode) {
+
+
         AudioManager am = (AudioManager) getSystemService(AUDIO_SERVICE);
         switch (keyCode) {
             case 32:
                 am.playSoundEffect(AudioManager.FX_KEYPRESS_SPACEBAR);
                 break;
-            case KEYCODE_DONE:
             case 10:
                 am.playSoundEffect(AudioManager.FX_KEYPRESS_RETURN);
                 break;
@@ -213,9 +194,6 @@ public class LazuriInputMethodService extends InputMethodService {
             mSymbolsKeyboard.setShifted(false);
         }
     }
-
-
-
 }
 
 
