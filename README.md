@@ -8,7 +8,7 @@ Android (API level 21+) sürümleri için geliştirilmiş, açık kaynak kodlu, 
 <img src="https://lh3.googleusercontent.com/1rTH7nUlO70JdU6ztM52n05Vr3TGALod61hKElam9pDbfNRlIfmJwpYP9qAyfH5MZog=w1180-h566-rw" />
 
 
-<a href="https://play.google.com/store/apps/details?id=com.cagataymobile.lazcaklavye"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/apps/en-play-badge.png" height="80pt"/></a>
+<a href="https://play.google.com/store/apps/details?id=com.muhammetcagatay.lazcaklavye"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/apps/en-play-badge.png" height="80pt"/></a>
 
 # Özellikler
  * Android Sistem Klavyesi
